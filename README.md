@@ -1,3 +1,21 @@
+# Web AI assistant using local LLM
+
+## Overview
+
+This repo can be used to build your own AI assistant with Ollama. 
+The improvements made from original repo are:
+- Adding super simple web crawler to get links from your base URL 
+- Replace Open AI with Ollama. [How to run Ollama](https://ollama.ai/blog/ollama-is-now-available-as-an-official-docker-image)
+
+Notes:
+- Change base URL/initial page in data_pipeline.py before processing
+- If you get timeout while processing query, increase ServiceContext request_timeout
+- To change model, replace Ollama model parameter. This repo is using mistral
+
+See the original README below for your references.
+
+---
+
 # Building a Blog AI assistant using Retrieval Augmented Generation
 
 ## Overview

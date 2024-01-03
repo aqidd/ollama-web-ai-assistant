@@ -3,17 +3,14 @@ import os
 import sys
 from shutil import rmtree
 
-import openai
 from llama_index import ServiceContext, SimpleDirectoryReader, TreeIndex
-from llama_index.llms.openai import OpenAI
+from llama_index.llms.ollama import Ollama
+from llama_index.embeddings.ollama_embedding import OllamaEmbedding
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
-openai.api_key = "YOUR_OPENAI_API_KEY" 
-
-service_context = ServiceContext.from_defaults(llm=OpenAI())
-
+service_context = ServiceContext.from_defaults(llm=Ollama(model="mistral", request_timeout=1000 * 60 * 60), embed_model=OllamaEmbedding(model_name="mistral"))
 
 def build_index(data_dir: str, knowledge_base_dir: str) -> None:
     """Build the vector index from the markdown files in the directory."""
@@ -32,7 +29,7 @@ def main() -> None:
     # Delete Storage Directory
     if os.path.exists(knowledge_base_dir):
         rmtree(knowledge_base_dir)
-    data_dir = os.path.join(base_dir, ".content", "blogs")
+    data_dir = os.path.join(base_dir, "content", "blogs")
     build_index(data_dir, knowledge_base_dir)
 
 

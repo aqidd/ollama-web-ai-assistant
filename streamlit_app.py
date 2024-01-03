@@ -3,16 +3,17 @@ import os
 import sys
 from typing import Any, Dict, Generator, List, Union
 
-import openai
 import streamlit as st
-from llama_index import StorageContext, load_index_from_storage
+from llama_index import ServiceContext, StorageContext, load_index_from_storage
+from llama_index.llms.ollama import Ollama
+from llama_index.embeddings.ollama_embedding import OllamaEmbedding
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 ResponseType = Union[Generator[Any, None, None], Any, List, Dict]
 
-openai.api_key = "YOUR_OPENAI_API_KEY" 
+service_context = ServiceContext.from_defaults(llm=Ollama(model="mistral", request_timeout=1000 * 60 * 60), embed_model=OllamaEmbedding(model_name="mistral"))
 
 @st.cache_resource(show_spinner=False)  # type: ignore[misc]
 def load_index() -> Any:
@@ -24,7 +25,7 @@ def load_index() -> Any:
     # rebuild storage context
     storage_context = StorageContext.from_defaults(persist_dir=dir_path)
     # load index
-    index = load_index_from_storage(storage_context)
+    index = load_index_from_storage(storage_context, service_context=service_context)
     query_engine = index.as_query_engine()
     print("Done.")
     return query_engine
@@ -32,12 +33,12 @@ def load_index() -> Any:
 
 def main() -> None:
     """Run the chatbot."""
-    
+
     if "query_engine" not in st.session_state:
         st.session_state.query_engine = load_index()
         
     st.title("Chat with BlogAI Assistant!!")
-    st.write("All about Snowpark for Data Engineering Quickstarts from quickstarts.snowflake.com. Ask away your questions!")
+    st.write("All about <YOUR_WEBSITE>. Ask away your questions!")
 
     if "messages" not in st.session_state:
         system_prompt = (

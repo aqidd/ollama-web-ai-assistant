@@ -1,6 +1,7 @@
 streamlit
-openai
 requests_html
 html2text
 llama-index
 watchdog
+pyyaml
+bs4
